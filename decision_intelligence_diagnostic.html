@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Intelligence Diagnostic — Is Your Project Set Up to Succeed?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:        #1D9E75;
+    --teal-light:  #E1F5EE;
+    --teal-mid:    #5DCAA5;
+    --navy:        #0C2440;
+    --navy-light:  #1a3a5c;
+    --black:       #0f0f0f;
+    --grey:        #73726c;
+    --grey-light:  #f4f4f2;
+    --white:       #ffffff;
+    --danger:      #C04828;
+    --amber:       #BA7517;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(29,158,117,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: -100px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(29,158,117,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--teal-mid);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.2s forwards;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 900;
+    line-height: 1.1;
+    max-width: 800px;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.4s forwards;
+  }
+  .hero h1 span { color: var(--teal-mid); }
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 20px);
+    color: rgba(255,255,255,0.65);
+    max-width: 560px;
+    line-height: 1.6;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.6s forwards;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.7s forwards;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--teal-mid);
+    display: block;
+  }
+  .stat-label { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+  .btn-start {
+    background: var(--teal);
+    color: var(--white);
+    border: none;
+    padding: 18px 48px;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.8s forwards;
+  }
+  .btn-start:hover { background: #16855f; transform: translateY(-2px); }
+  .hero-time {
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    margin-top: 14px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.9s forwards;
+  }
+
+  /* ── QUIZ CONTAINER ── */
+  .quiz-container {
+    display: none;
+    min-height: 100vh;
+    padding: 40px 24px 80px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .quiz-container.active { display: block; }
+
+  .progress-bar-wrap {
+    position: sticky;
+    top: 0;
+    background: var(--navy);
+    padding: 16px 0 20px;
+    z-index: 10;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 40px;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .progress-label { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; text-transform: uppercase; }
+  .progress-count { font-size: 13px; font-weight: 500; color: var(--teal-mid); }
+  .progress-track {
+    height: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--teal);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .dimension-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--teal-mid);
+    margin-bottom: 10px;
+  }
+  .question-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 40px;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: all 0.4s ease;
+  }
+  .question-text.visible { opacity: 1; transform: translateY(0); }
+
+  .options-grid { display: flex; flex-direction: column; gap: 12px; }
+  .option-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 18px 22px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    opacity: 0;
+    transform: translateX(-12px);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .option-btn.visible { opacity: 1; transform: translateX(0); }
+  .option-btn:hover {
+    background: rgba(29,158,117,0.12);
+    border-color: var(--teal);
+    transform: translateX(4px);
+  }
+  .option-btn.selected {
+    background: rgba(29,158,117,0.2);
+    border-color: var(--teal-mid);
+  }
+  .option-letter {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    flex-shrink: 0;
+    color: rgba(255,255,255,0.6);
+    transition: all 0.2s;
+  }
+  .option-btn.selected .option-letter {
+    background: var(--teal);
+    color: var(--white);
+  }
+  .option-text { font-size: 15px; line-height: 1.5; color: rgba(255,255,255,0.85); padding-top: 3px; }
+
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+  }
+  .btn-back {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.5);
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-back:hover { border-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.8); }
+  .btn-next {
+    background: var(--teal);
+    border: none;
+    color: var(--white);
+    padding: 14px 36px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .btn-next.enabled { opacity: 1; pointer-events: all; }
+  .btn-next.enabled:hover { background: #16855f; }
+
+  /* ── GATE ── */
+  .gate-container {
+    display: none;
+    min-height: 100vh;
+    padding: 80px 24px;
+    max-width: 560px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .gate-container.active { display: flex; flex-direction: column; justify-content: center; }
+  .gate-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+  .gate-sub { font-size: 16px; color: rgba(255,255,255,0.6); margin-bottom: 40px; line-height: 1.6; }
+  .gate-preview {
+    background: rgba(29,158,117,0.1);
+    border: 1px solid rgba(29,158,117,0.3);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 36px;
+    text-align: left;
+  }
+  .gate-preview-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--teal-mid); margin-bottom: 10px; }
+  .gate-preview-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.8);
+  }
+  .gate-preview-item::before { content: '→'; color: var(--teal-mid); flex-shrink: 0; }
+  .gate-form { display: flex; flex-direction: column; gap: 14px; }
+  .gate-input {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 4px;
+    padding: 16px 18px;
+    font-size: 15px;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+  .gate-input::placeholder { color: rgba(255,255,255,0.3); }
+  .gate-input:focus { outline: none; border-color: var(--teal); }
+  .btn-results {
+    background: var(--teal);
+    border: none;
+    color: var(--white);
+    padding: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+  .btn-results:hover { background: #16855f; }
+  .gate-privacy { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 10px; }
+
+  /* ── RESULTS ── */
+  .results-container {
+    display: none;
+    padding: 60px 24px 100px;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .results-container.active { display: block; }
+  .results-header { text-align: center; margin-bottom: 60px; }
+  .score-ring-wrap {
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 24px;
+    position: relative;
+  }
+  .score-ring-wrap svg { transform: rotate(-90deg); }
+  .score-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .score-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 1;
+    display: block;
+  }
+  .score-denom { font-size: 14px; color: rgba(255,255,255,0.4); }
+  .score-label {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .score-desc { font-size: 16px; color: rgba(255,255,255,0.6); max-width: 500px; margin: 0 auto; line-height: 1.6; }
+
+  .dimension-results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 560px) { .dimension-results { grid-template-columns: 1fr; } }
+  .dim-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+  .dim-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .dim-name { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.9); }
+  .dim-score-badge {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .dim-track {
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .dim-fill { height: 100%; border-radius: 2px; }
+  .dim-insight { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+
+  .findings-section { margin-bottom: 40px; }
+  .findings-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(29,158,117,0.3);
+  }
+  .finding-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .finding-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .finding-content {}
+  .finding-heading { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+  .finding-body { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+  .cta-box {
+    background: linear-gradient(135deg, rgba(29,158,117,0.2), rgba(12,36,64,0.8));
+    border: 1px solid rgba(29,158,117,0.4);
+    border-radius: 12px;
+    padding: 36px 40px;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .cta-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .cta-box p { font-size: 15px; color: rgba(255,255,255,0.65); margin-bottom: 28px; line-height: 1.6; max-width: 460px; margin-left: auto; margin-right: auto; }
+  .cta-btn-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--teal);
+    border: none;
+    color: var(--white);
+    padding: 16px 36px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { background: #16855f; }
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.8);
+    padding: 16px 36px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: rgba(255,255,255,0.6); }
+
+  .share-section { text-align: center; }
+  .share-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
+  .share-text {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 16px 20px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    text-align: left;
+    line-height: 1.6;
+    margin-bottom: 14px;
+    font-style: italic;
+  }
+  .btn-copy {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.7);
+    padding: 12px 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-copy:hover { background: rgba(255,255,255,0.12); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes dashAnim {
+    from { stroke-dashoffset: 502; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-label">Decision Intelligence Diagnostic</div>
+  <h1>Is your project set up<br>to <span>succeed</span> — or fail?</h1>
+  <p class="hero-sub">Most projects fail before they start. The decisions made in the first 90 days determine everything that follows. Take this 3-minute diagnostic to find out where your project stands.</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">50%</span><div class="stat-label">Faster delivery proven</div></div>
+    <div class="stat"><span class="stat-num">$5M+</span><div class="stat-label">Savings documented</div></div>
+    <div class="stat"><span class="stat-num">5</span><div class="stat-label">Decision dimensions scored</div></div>
+  </div>
+  <button class="btn-start" onclick="startDiagnostic()">Start the diagnostic</button>
+  <p class="hero-time">10 questions · 3 minutes · Instant results</p>
+</section>
+
+<!-- QUIZ -->
+<div class="quiz-container" id="quizContainer">
+  <div class="progress-bar-wrap">
+    <div class="progress-meta">
+      <span class="progress-label">Decision Intelligence Diagnostic</span>
+      <span class="progress-count" id="progressCount">1 of 10</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
+  </div>
+  <div class="dimension-label" id="dimensionLabel"></div>
+  <div class="question-text" id="questionText"></div>
+  <div class="options-grid" id="optionsGrid"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btnBack" onclick="prevQuestion()">← Back</button>
+    <button class="btn-next" id="btnNext" onclick="nextQuestion()">Next →</button>
+  </div>
+</div>
+
+<!-- GATE -->
+<div class="gate-container" id="gateContainer">
+  <div class="hero-label">Your results are ready</div>
+  <h2 class="gate-title">See your Decision Intelligence Score</h2>
+  <p class="gate-sub">Enter your details to unlock your personalised score across all five decision dimensions — and find out exactly where your project is most at risk.</p>
+  <div class="gate-preview">
+    <div class="gate-preview-label">Your report includes</div>
+    <div class="gate-preview-item">Your overall Decision Intelligence Score out of 100</div>
+    <div class="gate-preview-item">Score across 5 dimensions: clarity, evidence, alternatives, governance, outcomes</div>
+    <div class="gate-preview-item">Your three highest-risk decision areas</div>
+    <div class="gate-preview-item">Specific recommendations based on your answers</div>
+  </div>
+  <div class="gate-form">
+    <input class="gate-input" type="text" id="gateName" placeholder="Your name" />
+    <input class="gate-input" type="email" id="gateEmail" placeholder="Work email address" />
+    <input class="gate-input" type="text" id="gateOrg" placeholder="Organisation / institution" />
+    <input class="gate-input" type="text" id="gateRole" placeholder="Your role (e.g. Project Director)" />
+    <button class="btn-results" onclick="showResults()">Unlock my results →</button>
+  </div>
+  <p class="gate-privacy">Your details are used only to send your results and occasional Decision Intelligence insights. No spam. Unsubscribe any time.</p>
+</div>
+
+<!-- RESULTS -->
+<div class="results-container" id="resultsContainer">
+  <div class="results-header">
+    <div class="score-ring-wrap">
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <circle cx="90" cy="90" r="80" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="12"/>
+        <circle id="scoreCircle" cx="90" cy="90" r="80" fill="none" stroke="#1D9E75" stroke-width="12"
+          stroke-dasharray="502" stroke-dashoffset="502" stroke-linecap="round"
+          style="transition: stroke-dashoffset 1.4s ease 0.3s;"/>
+      </svg>
+      <div class="score-text">
+        <span class="score-num" id="scoreNum">0</span>
+        <span class="score-denom">/100</span>
+      </div>
+    </div>
+    <div class="score-label" id="scoreLabel"></div>
+    <p class="score-desc" id="scoreDesc"></p>
+  </div>
+
+  <div class="dimension-results" id="dimensionResults"></div>
+
+  <div class="findings-section">
+    <div class="findings-title">Your three key findings</div>
+    <div id="findingsContent"></div>
+  </div>
+
+  <div class="cta-box">
+    <h3>What happens next?</h3>
+    <p>A 30-minute Decision Intelligence consultation will show you exactly how to address your highest-risk areas — before your project locks in outcomes that are difficult to reverse.</p>
+    <div class="cta-btn-row">
+      <button class="btn-primary" onclick="window.open('https://linkedin.com/in/yourprofile','_blank')">Book a consultation →</button>
+      <button class="btn-secondary" onclick="downloadReport()">Download your report</button>
+    </div>
+  </div>
+
+  <div class="share-section">
+    <div class="share-label">Share your score on LinkedIn</div>
+    <div class="share-text" id="shareText"></div>
+    <button class="btn-copy" onclick="copyShare()">Copy to clipboard</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    dimension: "Dimension 1 — Decision Clarity",
+    text: "Before your project started, how clearly were decision rights defined — who decides what, when, and with what authority?",
+    options: [
+      { text: "Fully documented — every key decision has a named owner and clear criteria", score: 10 },
+      { text: "Mostly clear — most decisions have owners but some gaps exist", score: 7 },
+      { text: "Informally understood — people generally know but it's not written down", score: 4 },
+      { text: "Not defined — decisions are made as they arise by whoever is available", score: 1 }
+    ]
+  },
+  {
+    dimension: "Dimension 1 — Decision Clarity",
+    text: "When a major decision needs to be made on your project, how long does it typically take from identifying the need to reaching a decision?",
+    options: [
+      { text: "Days — there's a clear process and decision-makers are accessible", score: 10 },
+      { text: "1-2 weeks — some process exists but it can be slow", score: 7 },
+      { text: "Weeks to months — unclear ownership creates delays", score: 3 },
+      { text: "We often avoid making the decision altogether", score: 1 }
+    ]
+  },
+  {
+    dimension: "Dimension 2 — Evidence Quality",
+    text: "How would you describe the quality of information used to make key project decisions?",
+    options: [
+      { text: "Rigorous — decisions are based on structured data, analysis, and documented evidence", score: 10 },
+      { text: "Reasonable — we use available data but it's not always comprehensive", score: 7 },
+      { text: "Inconsistent — sometimes data-driven, often based on experience and intuition", score: 4 },
+      { text: "Mostly intuition — we go with what feels right based on experience", score: 1 }
+    ]
+  },
+  {
+    dimension: "Dimension 2 — Evidence Quality",
+    text: "When a project decision turns out to be wrong, how does your institution typically respond?",
+    options: [
+      { text: "Root cause analysis — we examine what information was missing and why", score: 10 },
+      { text: "Course correction — we fix the problem and try to learn informally", score: 6 },
+      { text: "Move on — we address the immediate issue without systematic reflection", score: 3 },
+      { text: "Blame — we focus on who made the decision rather than why it was wrong", score: 1 }
+    ]
+  },
+  {
+    dimension: "Dimension 3 — Alternatives Considered",
+    text: "Before committing to major project decisions, how thoroughly are alternative options explored?",
+    options: [
+      { text: "Always — structured option analysis with documented trade-offs before every major decision", score: 10 },
+      { text: "Often — we explore alternatives but without a consistent framework", score: 7 },
+      { text: "Sometimes — only for the biggest decisions", score: 3 },
+      { text: "Rarely — we typically go with the first viable option", score: 1 }
+    ]
+  },
+  {
+    dimension: "Dimension 3 — Alternatives Considered",
+    text: "How often does your project team challenge a proposed decision before it is made?",
+    options: [
+      { text: "Regularly — constructive challenge is expected and valued", score: 10 },
+      { text: "Sometimes — the culture is open but challenge is not systematic", score: 7 },
+      { text: "Rarely — hierarchy discourages open challenge", score: 3 },
+      { text: "Never — decisions from leadership are rarely questioned", score: 1 }
+    ]
+  },
+  {
+    dimension: "Dimension 4 — Governance Structure",
+    text: "How would you describe the governance framework currently in place for your most important project?",
+    options: [
+      { text: "Designed for this project — governance was built to match the specific risks and decisions", score: 10 },
+      { text: "Adapted template — we modified a standard framework to fit our context", score: 7 },
+      { text: "Standard template — we use the same governance approach for all projects", score: 3 },
+      { text: "Minimal — governance was not a primary consideration when the project started", score: 1 }
+    ]
+  },
+  {
+    dimension: "Dimension 4 — Governance Structure",
+    text: "How early in the project lifecycle was your governance framework designed and implemented?",
+    options: [
+      { text: "Before the project started — governance was in place before work began", score: 10 },
+      { text: "In the first month — early but not before initial decisions were made", score: 7 },
+      { text: "Once problems emerged — governance was added in response to issues", score: 3 },
+      { text: "It hasn't been formally designed — we operate without a governance framework", score: 1 }
+    ]
+  },
+  {
+    dimension: "Dimension 5 — Outcome Tracking",
+    text: "How systematically does your organisation track whether project decisions led to the outcomes intended?",
+    options: [
+      { text: "Fully — every major decision is logged with intended outcomes and reviewed at set intervals", score: 10 },
+      { text: "Partially — some decisions are tracked but not systematically", score: 6 },
+      { text: "Informally — we have a general sense of how things are going but no structured tracking", score: 3 },
+      { text: "Not at all — we don't formally track decisions against outcomes", score: 1 }
+    ]
+  },
+  {
+    dimension: "Dimension 5 — Outcome Tracking",
+    text: "How well does your institution learn from completed projects to improve decision-making on future ones?",
+    options: [
+      { text: "Systematically — lessons are documented, structured, and actively applied to future projects", score: 10 },
+      { text: "Informally — people carry knowledge but it's not captured or shared formally", score: 6 },
+      { text: "Inconsistently — lessons learned sessions happen but findings are rarely applied", score: 3 },
+      { text: "It doesn't — we make the same mistakes on every project", score: 1 }
+    ]
+  }
+];
+
+const dimensions = [
+  { name: "Decision clarity", questions: [0,1] },
+  { name: "Evidence quality", questions: [2,3] },
+  { name: "Alternatives considered", questions: [4,5] },
+  { name: "Governance structure", questions: [6,7] },
+  { name: "Outcome tracking", questions: [8,9] }
+];
+
+let currentQ = 0;
+let answers = new Array(10).fill(null);
+
+function startDiagnostic() {
+  document.getElementById('hero').style.display = 'none';
+  document.getElementById('quizContainer').classList.add('active');
+  renderQuestion(0);
+}
+
+function renderQuestion(idx) {
+  const q = questions[idx];
+  document.getElementById('progressCount').textContent = (idx+1) + ' of ' + questions.length;
+  document.getElementById('progressFill').style.width = ((idx+1)/questions.length*100) + '%';
+  document.getElementById('dimensionLabel').textContent = q.dimension;
+
+  const qt = document.getElementById('questionText');
+  qt.classList.remove('visible');
+  qt.textContent = q.text;
+  setTimeout(() => qt.classList.add('visible'), 50);
+
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (answers[idx] === i ? ' selected' : '');
+    btn.innerHTML = `<div class="option-letter">${String.fromCharCode(65+i)}</div><div class="option-text">${opt.text}</div>`;
+    btn.style.transitionDelay = (i * 0.07) + 's';
+    btn.onclick = () => selectOption(i);
+    grid.appendChild(btn);
+    setTimeout(() => btn.classList.add('visible'), 60 + i*70);
+  });
+
+  document.getElementById('btnBack').style.visibility = idx === 0 ? 'hidden' : 'visible';
+  updateNext();
+}
+
+function selectOption(i) {
+  answers[currentQ] = i;
+  document.querySelectorAll('.option-btn').forEach((btn, idx) => {
+    btn.classList.toggle('selected', idx === i);
+  });
+  updateNext();
+  if (currentQ < questions.length - 1) {
+    setTimeout(() => nextQuestion(), 380);
+  } else {
+    document.getElementById('btnNext').textContent = 'See my results →';
+  }
+}
+
+function updateNext() {
+  const btn = document.getElementById('btnNext');
+  btn.classList.toggle('enabled', answers[currentQ] !== null);
+}
+
+function nextQuestion() {
+  if (answers[currentQ] === null) return;
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion(currentQ);
+  } else {
+    showGate();
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) { currentQ--; renderQuestion(currentQ); }
+}
+
+function showGate() {
+  document.getElementById('quizContainer').classList.remove('active');
+  document.getElementById('gateContainer').classList.add('active');
+}
+
+function calcScores() {
+  let total = 0;
+  const dimScores = dimensions.map(dim => {
+    let s = 0;
+    dim.questions.forEach(qi => { if (answers[qi] !== null) s += questions[qi].options[answers[qi]].score; });
+    return { name: dim.name, score: Math.round(s / 2) };
+  });
+  dimScores.forEach(d => total += d.score);
+  return { total: Math.round(total / 5), dims: dimScores };
+}
+
+function showResults() {
+  const name = document.getElementById('gateName').value || 'there';
+  document.getElementById('gateContainer').classList.remove('active');
+  document.getElementById('resultsContainer').classList.add('active');
+
+  const { total, dims } = calcScores();
+
+  // Score ring
+  const offset = 502 - (502 * total / 100);
+  setTimeout(() => {
+    document.getElementById('scoreCircle').style.strokeDashoffset = offset;
+    document.getElementById('scoreCircle').style.stroke =
+      total >= 75 ? '#1D9E75' : total >= 50 ? '#BA7517' : '#C04828';
+  }, 100);
+
+  // Animate score number
+  let count = 0;
+  const interval = setInterval(() => {
+    count = Math.min(count + Math.ceil(total/40), total);
+    document.getElementById('scoreNum').textContent = count;
+    if (count >= total) clearInterval(interval);
+  }, 35);
+
+  // Label and desc
+  let label, desc;
+  if (total >= 75) {
+    label = "Strong decision intelligence";
+    desc = "Your project has a solid decision architecture. The gaps that exist are manageable — but even strong foundations can be made stronger. See your dimension scores below.";
+  } else if (total >= 50) {
+    label = "Decision intelligence at risk";
+    desc = "Your project has some decision architecture in place, but significant gaps exist that are likely affecting delivery speed and cost outcomes. These gaps are addressable — before they compound.";
+  } else if (total >= 30) {
+    label = "Decision intelligence deficit";
+    desc = "Your project is operating with a significant decision intelligence deficit. Based on research across government and infrastructure projects, scores in this range correlate with delays, cost overruns, and avoidable disputes.";
+  } else {
+    label = "Critical decision risk";
+    desc = "Your project is at critical risk. The decisions that will determine its outcome are being made without adequate architecture, evidence, or governance. This is the pattern that precedes the failures we see in 70%+ of major projects.";
+  }
+  document.getElementById('scoreLabel').textContent = label;
+  document.getElementById('scoreDesc').textContent = desc;
+
+  // Dimension cards
+  const dimColours = ['#1D9E75','#378ADD','#BA7517','#7F77DD','#D85A30'];
+  const dimInsights = [
+    ["Decision rights are clear and fast.", "Some clarity — gaps remain.", "Ambiguity is slowing your project.", "Unclear ownership is a critical risk."],
+    ["Evidence-driven decisions throughout.", "Reasonable but inconsistent.", "Intuition is filling dangerous gaps.", "Decisions lack evidential grounding."],
+    ["Alternatives are rigorously explored.", "Some exploration — not systematic.", "Options are rarely fully evaluated.", "The first idea becomes the decision."],
+    ["Governance is fit for purpose.", "Adequate but not optimised.", "Generic governance creates risk.", "Governance is a critical blind spot."],
+    ["Outcomes are tracked and learned from.", "Partial tracking limits learning.", "Learning is informal and inconsistent.", "Institutional memory is not captured."]
+  ];
+  const dimHtml = dims.map((d, i) => {
+    const pct = d.score;
+    const insightIdx = pct >= 75 ? 0 : pct >= 50 ? 1 : pct >= 30 ? 2 : 3;
+    const badgeBg = pct >= 75 ? 'rgba(29,158,117,0.2)' : pct >= 50 ? 'rgba(186,117,23,0.2)' : 'rgba(192,72,40,0.2)';
+    const badgeColor = pct >= 75 ? '#5DCAA5' : pct >= 50 ? '#EF9F27' : '#F0997B';
+    return `<div class="dim-card">
+      <div class="dim-card-header">
+        <div class="dim-name">${d.name}</div>
+        <div class="dim-score-badge" style="background:${badgeBg};color:${badgeColor}">${pct}/100</div>
+      </div>
+      <div class="dim-track"><div class="dim-fill" style="width:${pct}%;background:${dimColours[i]};transition:width 1s ease ${0.3+i*0.15}s"></div></div>
+      <div class="dim-insight">${dimInsights[i][insightIdx]}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('dimensionResults').innerHTML = dimHtml;
+
+  // Findings
+  const sorted = [...dims].sort((a,b) => a.score - b.score);
+  const worst = sorted.slice(0,3);
+  const findingMap = {
+    "Decision clarity": { icon: "◈", heading: "Decision rights are unclear", body: "Projects without defined decision architecture spend 40% more time in conflict and rework. Clarifying who decides what — before the next major decision — is the highest-leverage action available." },
+    "Evidence quality": { icon: "◎", heading: "Decisions lack evidential grounding", body: "When decisions are driven by intuition rather than structured evidence, the probability of costly reversal increases significantly. A decision intelligence framework introduces evidence standards at every gate." },
+    "Alternatives considered": { icon: "◇", heading: "Options are not being fully evaluated", body: "The first viable option is rarely the best one. Institutionalising structured alternatives analysis — even a 30-minute exercise — dramatically improves decision quality and reduces regret." },
+    "Governance structure": { icon: "▣", heading: "Governance is not fit for this project", body: "Generic governance frameworks fail on complex projects because they weren't designed for the specific risks involved. Bespoke governance design, built before the work starts, changes outcomes permanently." },
+    "Outcome tracking": { icon: "◉", heading: "Decision outcomes are not being captured", body: "Without systematic outcome tracking, your institution will repeat the same decision errors on every future project. The data captured now becomes the intelligence that prevents failure later." }
+  };
+  const fHtml = worst.map(d => {
+    const f = findingMap[d.name];
+    const iconBg = d.score >= 50 ? 'rgba(186,117,23,0.2)' : 'rgba(192,72,40,0.2)';
+    const iconCol = d.score >= 50 ? '#EF9F27' : '#F0997B';
+    return `<div class="finding-item">
+      <div class="finding-icon" style="background:${iconBg};color:${iconCol}">${f.icon}</div>
+      <div class="finding-content">
+        <div class="finding-heading">${f.heading}</div>
+        <div class="finding-body">${f.body}</div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('findingsContent').innerHTML = fHtml;
+
+  // Share text
+  const shareMsg = `I just completed the Decision Intelligence Diagnostic for Projects.\n\nMy score: ${total}/100 — ${label}\n\nKey finding: my project scores lowest on ${sorted[0].name} (${sorted[0].score}/100).\n\nIf your institution runs major projects and you've never measured your decision intelligence — this is worth 3 minutes.\n\nTake it here: [link]\n\n#DecisionIntelligence #ProjectStrategy #GovernmentProjects #Infrastructure`;
+  document.getElementById('shareText').textContent = shareMsg;
+}
+
+function copyShare() {
+  const text = document.getElementById('shareText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    document.querySelector('.btn-copy').textContent = 'Copied!';
+    setTimeout(() => document.querySelector('.btn-copy').textContent = 'Copy to clipboard', 2000);
+  });
+}
+
+function downloadReport() {
+  alert('In production: this would generate a personalised PDF report with your scores and findings.');
+}
+
+// Reset dim fill widths to 0 for animation
+setTimeout(() => {
+  document.querySelectorAll('.dim-fill').forEach(el => el.style.width = '0');
+}, 100);
+</script>
+</body>
+</html>
